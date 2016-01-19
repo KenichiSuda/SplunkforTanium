@@ -7,6 +7,7 @@
 import os
 import re
 import sys
+import ssl
 import time
 import socket
 import httplib
@@ -59,11 +60,8 @@ class TaniumQuestion:
 			sys.exit(0)
 		
 	def make_soap_connection (self,soap_message):
-		"""
-		TODO: wrap this in a try/except
-		"""
-		
-		webservice = httplib.HTTPSConnection(self.host)
+		webservice = httplib.HTTPSConnection(self.host,
+									context = ssl._create_unverified_context())
 		webservice.putrequest("POST", "/soap")
 		webservice.putheader("Host", self.host)
 		webservice.putheader("User-Agent", "Python post")
@@ -219,7 +217,7 @@ class TaniumQuestion:
 		supporting.
 		"""	
 		
-		best_regex = '(\<parse_result_groups\>)(.*?)(\<\/parse_result_group\>)'
+		best_regex = '(\<selects\>)(.*?)(\<\/selects\>)'
 		id_ext_regex = '(\<result_object\>\<question\>\<id\>)(.*?)(\<\/id\>)'
 		verbage_regex = '(\<question_text\>)(.*?)(\<\/question_text\>)'
 		
@@ -233,8 +231,9 @@ class TaniumQuestion:
 		
 		best_guess_xml = re.search(best_regex,guess_xml,re.DOTALL)
 		best_guess_xml = best_guess_xml.group(2) + best_guess_xml.group(3)
+		best_guess_xml = "<question><selects>" + best_guess_xml + "</question>"
 		
-		self.verbage = re.search(verbage_regex,best_guess_xml,re.DOTALL)
+		self.verbage = re.search(verbage_regex,soap_message,re.DOTALL)
 		self.verbage = str(self.verbage.group(2))
 		
 		#-------------- submit best guess, get id --------
@@ -248,8 +247,8 @@ class TaniumQuestion:
 		id_num = id_num.group(2)
 		
 		return id_num
+	
 
-		
 	def ask_tanium_a_question (self,sensors,timeout):
 
 		self.last_id = self.send_request_to_tanium (sensors)
