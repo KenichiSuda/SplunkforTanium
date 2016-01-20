@@ -7,6 +7,7 @@
 import os
 import re
 import sys
+import ssl
 import httplib
 import argparse
 import HTMLParser
@@ -45,7 +46,7 @@ class TaniumQuestion:
 		TODO: wrap this in a try/except
 		"""
 		
-		webservice = httplib.HTTPSConnection(self.host)
+		webservice = httplib.HTTPSConnection(self.host,context = ssl._create_unverified_context())
 		webservice.putrequest("POST", "/soap")
 		webservice.putheader("Host", self.host)
 		webservice.putheader("User-Agent", "Python post")
