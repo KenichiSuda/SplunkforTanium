@@ -15,9 +15,8 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 import splunk.entity as entity
 import splunk.clilib.cli_common as spcli
-
+import importlib
 import time
-
 
 def tcp_to_splunk(host, port, data):
     # TODO: Wrap this in a try/except
@@ -66,7 +65,10 @@ class TaniumQuestion:
 
 
     def make_soap_connection(self, soap_message):
-        webservice = httplib.HTTPSConnection(self.host, context=ssl._create_unverified_context())
+        try:
+            webservice = httplib.HTTPSConnection(self.host, context=ssl._create_unverified_context())
+        except Exception, e:
+            raise Exception, "There was an error marshalling httplib %s" %str(e)
         webservice.putrequest("POST", "/soap")
         webservice.putheader("Host", self.host)
         webservice.putheader("User-Agent", "Python post")
@@ -267,19 +269,68 @@ class TaniumQuestion:
 
 def getCredentials(sessionKey):
     myapp = 'tanium'
+
+    # need to deal with potentially multiple credentials
+    # due to TA builder voodoo
+    conf_dict = spcli.getConfStanzas('tanium_credential')
+
+    # case where dictionary likely contains
+    # disabled key - more ta factory voodoo
+    if len(conf_dict) > 2:
+        for i in conf_dict:
+            try:
+    # note have to use string literal comparisons...because reasons
+                if conf_dict[i]['removed'] == '0' or (conf_dict[i].get("password") and conf_dict[i] != "default" ):
+                    enabledUser = str(i)
+
+            except:
+                continue
+
+    else:
+        for i in conf_dict:
+            try:
+                if conf_dict[i] != "default":
+                    enabledUser = str(i)
+                    break
+                else:
+                    enabledUser = str(i)
+                    break
+            except Exception, e:
+                raise Exception, "Error with credential map - check your setup: %s" % str(e)
+
     try:
-    # list all credentials
-        entities = entity.getEntities(['admin', 'passwords'], namespace=myapp,
-                                  owner='nobody', sessionKey=sessionKey)
+        enabledUser
     except Exception, e:
-        raise Exception("Could not get %s credentials from splunk. Error: %s" % (myapp, str(e)))
+        print """User: %s No Valid Tanium Credentials Found Check Your Setup. Error Output: %s""" %(conf_dict,str(e))
+        raise Exception, "No valid users were found - check your setup: %s" % str(e)
 
-# return first set of credentials
+    try:
+        # list all credentials
+        entities = entity.getEntities(['admin', 'passwords'], namespace=myapp,
+                                      owner='nobody', sessionKey=sessionKey)
+    except Exception, e:
+        raise Exception, "Could not get %s credentials from splunk. Error: %s" % (myapp, str(e))
 
+        # iterate through creds
+        # and find which set is 'enabled' based on setup screen and
+        # tanium_credential.conf
     for i, c in entities.items():
-        return c['username'], c['clear_password']
+        if c['username'] == enabledUser:
+            username = c['username']
+            password = c['clear_password']
+            break
+        else:
+            continue
+    # return c['username'], c['clear_password']
+    # TAB causes a funky separator
+    try:
+        password = password.split("splunk_cred_sep``", 1)[1]
+    except Exception, e:
+        print "Error attempting to decode the Tanium password - check your app setup"
+        raise Exception, "Error attempting to decode password - check your app setup: %s" %str(e)
 
-    raise Exception("No credentials have been found")
+    return username, password
+
 
 def get_input_config():
 
@@ -327,11 +378,11 @@ def main():
     # now get tanium credentials - might exit if no creds are available
     username, passwd = getCredentials(authTok)
 
-    sys.stderr = sys.stdout
+    #sys.stderr = sys.stdout
 
-    configuration_dict = spcli.getConfStanza('tanium', 'taniumserver')
+    configuration_dict = spcli.getConfStanza('tanium_customized', 'taniumhost')
 
-    tanium_server = configuration_dict['taniumhost']
+    tanium_server = configuration_dict['content']
 
 
     parser = argparse.ArgumentParser(description='Tanium Splunk NLP Query')
@@ -384,7 +435,7 @@ def main():
             '--splunk_port',
             metavar='SPLUNK_PORT',
             required=False,
-            default="9999",
+            default="443",
             help='Splunk server TCP port')
 
     args = vars(parser.parse_args())
@@ -397,6 +448,7 @@ def main():
     show_parse = args['show_parse']
     splunk = args['splunk']
     splunk_port = int(args['splunk_port'])
+
 
     # end processing args now inst the Tanium class
     my_tanium = TaniumQuestion(tanium, user, password)

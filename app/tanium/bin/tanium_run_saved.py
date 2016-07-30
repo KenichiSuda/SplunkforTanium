@@ -252,17 +252,21 @@ class TaniumQuestion:
 def getCredentials(sessionKey):
     myapp = 'tanium'
     try:
-    # list all credentials
+        # list all credentials
         entities = entity.getEntities(['admin', 'passwords'], namespace=myapp,
-                                  owner='nobody', sessionKey=sessionKey)
+                                      owner='nobody', sessionKey=sessionKey)
     except Exception, e:
         raise Exception("Could not get %s credentials from splunk. Error: %s" % (myapp, str(e)))
 
-# return first set of credentials
+        # return first set of credentials
 
     for i, c in entities.items():
-        return c['username'], c['clear_password']
-
+        username = c['username']
+    password = c['clear_password']
+    # return c['username'], c['clear_password']
+    # TAB causes a funky separator
+    password = password.split("splunk_cred_sep``", 1)[1]
+    return username, password
     raise Exception("No credentials have been found")
 
 def get_input_config():
@@ -309,9 +313,9 @@ def main():
 
     sys.stderr = sys.stdout
 
-    configuration_dict = spcli.getConfStanza('tanium', 'taniumserver')
+    configuration_dict = spcli.getConfStanza('tanium_customized', 'taniumhost')
 
-    tanium_server = configuration_dict['taniumhost']
+    tanium_server = configuration_dict['content']
 
     parser = argparse.ArgumentParser(description='Tanium Splunk Saved Query')
     """

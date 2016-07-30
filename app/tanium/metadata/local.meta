@@ -1,0 +1,52 @@
+[passwords/credential%3A%3Auser%3A]
+owner = admin
+version = 6.4.2
+modtime = 1468865628.554588400
+
+[tanium/taniumserver]
+version = 6.4.0
+modtime = 1468873838.410375000
+
+[app/install/is_configured]
+version = 6.4.0
+modtime = 1469129835.899999000
+
+[passwords/credential%3A%3Ajunk%3A]
+owner = admin
+version = 6.4.2
+modtime = 1468866490.463376700
+
+[passwords/credential%3A%3Ataniumadmin%3A]
+owner = admin
+version = 6.4.0
+modtime = 1468873838.159664000
+
+[tanium/global_settings]
+owner = admin
+version = 6.4.0
+modtime = 1469127161.485061000
+
+[passwords/credential%3Atanium%3Ataniumadmin%3A]
+owner = admin
+version = 6.4.0
+modtime = 1469127161.525342000
+
+[tanium_credential/taniumadmin]
+owner = admin
+version = 6.4.0
+modtime = 1469129834.781298000
+
+[tanium_customized/taniumhost]
+owner = admin
+version = 6.4.0
+modtime = 1469129834.812720000
+
+[passwords/credential%3Atanium%3ATaniumAdmin%3A]
+owner = admin
+version = 6.4.0
+modtime = 1469129834.746457000
+
+[tanium_credential/TaniumAdmin]
+owner = admin
+version = 6.4.0
+modtime = 1469129834.760508000
