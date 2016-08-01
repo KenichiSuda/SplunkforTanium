@@ -1,24 +1,14 @@
 <setup>
-    <block title="Tanium API Server Credentials"></block>
-
-    <block title="Add Server Info" endpoint="tanium/tanium_configure" entity="taniumserver">
-        <input field="taniumhost">
-            <label>Tanium API Server</label>
+    <block title=" " endpoint="tanium_input_setup/tanium_settings" entity="tanium_settings">
+        <input field="all_settings">
+            <label> </label>
             <type>text</type>
         </input>
+        <text>
+            <![CDATA[
+                <script type="text/javascript" src="/en-US/static/app/tanium/js/setup.js"></script>
+                <script type="text/javascript" src="/en-US/static/app/tanium/js/setup_page.js"></script>
+            ]]>
+        </text>
     </block>
-
-<block title="Add new credentials" endpoint="storage/passwords" entity="_new">
-  <input field="name">
-    <label>Username</label>
-    <type>text</type>
-  </input>
-
-  <input field="password">
-    <label>Password</label>
-    <type>password</type>
-  </input>
-</block>
-
-
 </setup>

@@ -1,3 +1,14 @@
-<nav search_view="search" color="#880000">
-  <view name="dashboards"  />
+<nav color="#880000">
+  <collection label="Question Dashboards">
+          <view name="tanium" default="true"/>
+          <view name="data_leakage"/>
+          <view name="tanium_application_visibility"/>
+          <view name="tanium_asset_management"/>
+          <view name="tanium_machine_user_log"/>
+          <view name="tanium_patch_vulnerability"/>
+          <view name="tanium_unmanaged_assets"/>
+          <view name="tanium_virustotal"/>
+  </collection>
+  <view name="server_setup"/>
+  <view name="search"/>
 </nav>
