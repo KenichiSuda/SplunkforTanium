@@ -140,7 +140,7 @@ class TaniumQuestion:
             mr_passed = re.search(mr_passed_regex,is_complete_xml)
             mr_passed = mr_passed.group(2)
             
-            if str(est_total)== str(mr_passed):
+            if (int(mr_passed) - int(est_total)) >= 0:
                 flag = 1
                 
             count = count + 1
