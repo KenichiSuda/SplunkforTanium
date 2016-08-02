@@ -257,7 +257,7 @@ def main ():
             metavar='(True|False)',
             required=False,
             default="True",
-            help='Controls for key clearning')
+            help='Controls for key cleaning')
          
     args = vars(parser.parse_args())
     

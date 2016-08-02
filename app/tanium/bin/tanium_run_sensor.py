@@ -78,7 +78,7 @@ class TaniumQuestion:
         webservice.close()
         return data
 
-    def xml_from_tanium_to_csv_list(self, xml, clear_key):
+    def xml_from_tanium_to_csv_list(self, xml, clean_key):
 
         root = ET.fromstring(xml)
         result_list = []
@@ -370,7 +370,7 @@ def main():
             metavar='(True|False)',
             required=False,
             default="True",
-            help='Controls for key clearning')
+            help='Controls for key cleaning')
 
     args = vars(parser.parse_args())
 
@@ -398,7 +398,7 @@ def main():
         print "The request timed out, Try setting a higher timeout"
     else:
         # translate the results to a user friendly list.
-        list_response = my_tanium.xml_from_tanium_to_csv_list(xml_response, clear_key)
+        list_response = my_tanium.xml_from_tanium_to_csv_list(xml_response, clean_key)
 
         list_line = ""
         list_count = 0
