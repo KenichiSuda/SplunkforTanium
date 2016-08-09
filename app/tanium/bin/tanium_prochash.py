@@ -69,7 +69,7 @@ class TaniumQuestion:
         webservice.close()
         return data
 
-    def xml_from_tanium_to_csv_list (self,xml):
+    def xml_from_tanium_to_csv_list (self,xml, clean_key):
         
         root        = ET.fromstring(xml)
         result_list = []    
@@ -83,6 +83,8 @@ class TaniumQuestion:
             for col_name in col_group.findall(".//dn"):
                 col_head = col_head + "," + col_name.text
             col_head = col_head.lstrip(",")
+            if clean_key == True:
+                col_head = col_head.replace(' ','_')
         
         result_list.append(col_head)
             
@@ -250,6 +252,13 @@ def main ():
         default = "3",
         help = 'sensor poll timeout')
         
+    parser.add_argument(
+            '--clean_key',
+            metavar='(True|False)',
+            required=False,
+            default="True",
+            help='Controls for key cleaning')
+         
     args = vars(parser.parse_args())
     
     tanium   = args['tanium']
@@ -257,6 +266,10 @@ def main ():
     password = args['password']
     sensors  = ["Running Processes with MD5 Hash","IP Address"]
     timeout  = args['timeout']
+    if args['clean_key'].lower() == "true":
+        clean_key = True
+    else:
+        clean_key = False
     
     #end processing args now inst the Tanium class
     my_tanium = TaniumQuestion(tanium,user,password)
@@ -270,7 +283,7 @@ def main ():
         print "The request timed out, Try setting a higher timeout"
     else:
         #translate the results to a user friendly list.
-        list_response = my_tanium.xml_from_tanium_to_csv_list(xml_response)
+        list_response = my_tanium.xml_from_tanium_to_csv_list(xml_response, clean_key)
         
         list_line  = ""
         list_count = 0
