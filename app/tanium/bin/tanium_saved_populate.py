@@ -293,32 +293,31 @@ def main():
     # sys.stderr = open('err.txt', 'w+')
     # Redirect error to out, so we can see any errors
 
-    #sessionXml = sys.stdin.readline()
+    sessionXml = sys.stdin.readline()
 
-    #if len(sessionXml) == 0:
-    #   sys.stderr.write("Did not receive a session key from splunkd. " +
-    #                    "Please enable passAuth in inputs.conf for this " +
-    #                    "script\n")
-    #   exit(2)
+    if len(sessionXml) == 0:
+       sys.stderr.write("Did not receive a session key from splunkd. " +
+                        "Please enable passAuth in inputs.conf for this " +
+                        "script\n")
+       exit(2)
 
     #parse the xml sessionKey
 
-    #start = sessionXml.find('<authToken>') + 11
-    #stop = sessionXml.find('</authToken>')
-    #authTok = sessionXml[start:stop]
+    start = sessionXml.find('<authToken>') + 11
+    stop = sessionXml.find('</authToken>')
+    authTok = sessionXml[start:stop]
 
 
     # now get tanium credentials - might exit if no creds are available
-    #username, passwd = getCredentials(authTok)
-
-    #sys.stderr = sys.stdout
-
-    #configuration_dict = spcli.getConfStanza('tanium_customized', 'taniumhost')
-
-    #tanium_server = configuration_dict['content']
-
-
-    parser = argparse.ArgumentParser(description='Tanium Splunk Save A Question')
+    username, passwd = getCredentials(authTok)
+    sys.stderr = sys.stdout
+    configuration_dict = spcli.getConfStanza('tanium_customized', 'taniumhost')
+    tanium_server = configuration_dict['content']
+    
+    #get the cli parsed args... not really needed here
+    #parser = argparse.ArgumentParser(description='Tanium Splunk Save A Question')
+    
+    """
     parser.add_argument(
         '--tanium',
         metavar = 'TANIUM',
@@ -336,39 +335,28 @@ def main():
         metavar = 'PASSWORD',
         required = True,
         help = 'user password')
-
-    parser.add_argument(
-            '--question',
-            metavar='QUESTION',
-            required=True,
-            help='nlp question')
-
-    parser.add_argument(
-            '--save_name',
-            metavar='SAVENAME',
-            required=True,
-            help='The name to save the question under')
-
+    """
+    
     args = vars(parser.parse_args())
     
-    #tanium = tanium_server
-    #user = username
-    #password = passwd
+    tanium   = tanium_server
+    user     = username
+    password = passwd
 
-    tanium    = args['tanium']
-    user      = args['user']
-    password  = args['password']
-    question  = args['question']
-    save_name = args['save_name']
+    #tanium    = args['tanium']
+    #user      = args['user']
+    #password  = args['password']
 
     # end processing args now inst the Tanium class
     my_tanium = TaniumQuestion(tanium, user, password)
+    
+    # print the header
+    print "Question,NLP Saved as,Saved Name,Tanium ID number"
 
     # send the questions to Tanium
     question = "Get Computer Name and Non-Approved Established Connections from all machines with Non-Approved Established Connections containing \":\""
     save_name = "Splunk Non-Approved Established Connections by Computer"
     saved_resp = my_tanium.ask_tanium_a_question(question,save_name)
-    print "Question,NLP Saved as,Saved Name,Tanium ID number"
     print question + "," + saved_resp[0] + "," + save_name + "," + saved_resp[1]
     
     # send the questions to Tanium
