@@ -14,8 +14,8 @@ import argparse
 import HTMLParser
 from datetime import datetime
 import xml.etree.ElementTree as ET
-#import splunk.entity as entity
-#import splunk.clilib.cli_common as spcli
+import splunk.entity as entity
+import splunk.clilib.cli_common as spcli
 import importlib
 import time
 
