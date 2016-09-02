@@ -1,0 +1,39 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SOAP-ENV:Body>
+    <typens:tanium_soap_request xmlns:typens="urn:TaniumSOAP">
+        <auth xmlns="">
+            <username>%s</username>
+            <password>%s</password>
+        </auth>
+      <command>AddObject</command>
+      <object_list>
+        <saved_question>
+          <mod_time></mod_time>
+          <expire_seconds>600</expire_seconds>
+          <row_count_flag>1</row_count_flag>
+          <name>%s</name>
+          <public_flag>1</public_flag>
+          <archive_enabled_flag>0</archive_enabled_flag>
+          <sort_column>0</sort_column>
+          <action_tracking_flag>0</action_tracking_flag>
+          <hidden_flag>0</hidden_flag>
+          <issue_seconds>120</issue_seconds>
+          <keep_seconds>3600</keep_seconds>
+          <issue_seconds_never_flag>0</issue_seconds_never_flag>
+          <query_text>%s</query_text>
+          <most_recent_question_id></most_recent_question_id>
+          <mod_user>
+            <name>%s</name>
+          </mod_user>
+          <question>
+            <id>%s</id>
+          </question>
+        </saved_question>
+      </object_list>
+      <options>
+        <suppress_object_list>1</suppress_object_list>
+      </options>
+    </typens:tanium_soap_request>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
